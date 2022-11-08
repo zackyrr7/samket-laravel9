@@ -14,6 +14,7 @@ use App\Http\Controllers\LampuController;
 use App\Http\Controllers\PdamController;
 use App\Http\Controllers\WalletController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -82,3 +83,19 @@ Route::post('/pdam', [PdamController::class, 'store']);
 Route::get('/wallet', [WalletController::class, 'index']);
 Route::delete('/wallet/{id}', [WalletController::class, 'destroy']);
 Route::post('/wallet', [WalletController::class, 'store']);
+
+Route::group(['middleware' => 'auth:api'], function ($router) {
+    Route::get('/tabungan/show', [TabunganController::class, 'index']);
+    Route::post('/tabungan/store', [TabunganController::class, 'store']);
+    
+});
+
+
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('register', 'register');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+
+});
