@@ -25,7 +25,7 @@ class WalletController extends Controller
                 'no_wallet' => $request->no_wallet
                 
             ]);
-             return Wallet::create($request->all());
+         
        
         
             //Json Response
@@ -57,4 +57,24 @@ class WalletController extends Controller
             'message' => "Transaksi berhasil di hapus"
         ]);
     }
+    public function indexWallet()
+    {
+        $wallet = Wallet::all();
+        return view('wallet.index_backend', compact('wallet'));
+    }
+
+    public function detailWallet($id)
+    {
+        $wallet = Wallet::find($id);
+        return view('wallet.detail_wallet',compact('wallet'));
+    }
+    
+
+    public function hapusBackend($id)
+    {
+        $wallet = Wallet::find($id);
+        $wallet->delete();
+        return redirect()->route('admin.wallet');
+    }
+
 }

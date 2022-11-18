@@ -23,7 +23,7 @@ class LampuController extends Controller
                 'PLN' => $request->PLN
                 
             ]);
-             return Lampu::create($request->all());
+            
        
         
             //Json Response
@@ -54,5 +54,25 @@ class LampuController extends Controller
         return response()->json([
             'message' => "pertanyaan berhasil di hapus"
         ]);
+    }
+
+    public function indexLampu()
+    {
+        $lampu = Lampu::all();
+        return view('lampu.index_backend', compact('lampu'));
+    }
+
+    public function detailLampu($id)
+    {
+        $lampu = Lampu::find($id);
+        return view('lampu.detail_lampu',compact('lampu'));
+    }
+    
+
+    public function hapusBackend($id)
+    {
+        $lampu = Lampu::find($id);
+        $lampu->delete();
+        return redirect()->route('admin.listrik');
     }
 }

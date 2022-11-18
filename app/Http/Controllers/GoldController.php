@@ -25,7 +25,7 @@ class GoldController extends Controller
                 'nomor_hp' => $request->nomor_hp,
                 
             ]);
-             return Gold::create($request->all());
+             
        
         
             //Json Response
@@ -73,4 +73,26 @@ class GoldController extends Controller
             'message' => "pertanyaan berhasil di hapus"
         ]);
     }
+
+
+    public function indexEmas()
+    {
+        $gold = Gold::all();
+        return view('gold.index_backend', compact('gold'));
+    }
+
+    public function detailEmas($id)
+    {
+        $gold = Gold::find($id);
+        return view('gold.detail_gold',compact('gold'));
+    }
+    
+
+    public function hapusBackend($id)
+    {
+        $gold = Gold::find($id);
+        $gold->delete();
+        return redirect()->route('admin.emas');
+    }
+
 }

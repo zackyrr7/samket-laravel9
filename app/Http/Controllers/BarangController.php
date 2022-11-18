@@ -158,4 +158,127 @@ class BarangController extends Controller
             'message' => "Barang berhasil di hapus"
         ]);
     }
+
+    public function indexBarang()
+    {
+        $barang = Barang::all();
+        return view('barang.index_backend', compact('barang'));
+    }
+
+    public function detailBarang($id)
+    {
+        $barang = Barang::find($id);
+        return view('barang.detail_barang',compact('barang'));
+    }
+    public function formUbahBAckend($id)
+    {
+        $barang = Barang::find($id);
+        return view('barang.formubah_barang',compact('barang'));
+    }
+    public function ubahBackend(Request $request,$id)
+    {
+        // $barang = Barang::find($id);
+        // $barang->nama = $request->nama;
+        // $barang->harga= $request->harga;
+        // $barang->foto= $request->imageName;
+       
+        // $barang->save();
+        // return redirect()->route('admin.barang.detail',['id'=>$barang->id]);
+        try{
+            //menemukan barang
+            $barang = Barang::find($id);
+            if(!$barang){
+                return response()->json([
+                    'message' => 'Barang tidak ditemukan'
+                ],404);
+            }
+
+            $barang->nama = $request->nama;
+            $barang->harga= $request->harga;
+
+            if ($request->foto){
+                $storage = Storage::disk('public');
+
+                //hapus foto lama
+                if ($storage->exists($barang->foto))
+                $storage->delete($barang->foto);
+
+                //nama foto
+                $imageName = Str::random(32).".".$request->foto->getClientOriginalExtension();
+                $barang->foto = $imageName;
+
+                //save foto
+                $storage->put($imageName, file_get_contents($request->foto));
+            }
+            //update barang
+            $barang->save();
+
+            //respon json
+            return redirect()->route('admin.barang.detail',['id'=>$barang->id]);
+
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => "Something went really wrong"
+            ]);
+        }
+    }
+
+    public function hapusBackend($id)
+    
+    {
+        $barang = Barang::find($id);
+        if(!$barang) {
+            return response()->json([
+                'message' => "Barang tidak Ditemukan"
+            ],404);
+        }
+
+        //hapus storage
+        $storage = Storage::disk('public');
+
+        //hapus gambar
+        if($storage->exists($barang->foto))
+        $storage->delete($barang->foto);
+
+        //delete barang
+        $barang->delete();
+
+        return redirect()->route('admin.barang');
+    }
+
+    public function formTambahBackend()
+    {
+        return view('barang.form_tambah_barang');
+    }
+
+    public function tambahBackend(Request $request)
+    {
+        
+        try{
+            $imageName = Str::random(32).".".$request->foto->getClientOriginalExtension();
+
+            //create barang
+            Barang::create([
+                'nama' =>$request->nama,
+                'harga'=> $request->harga,
+                'foto' => $imageName
+            ]);
+            // return Barang::create($request->all());
+       
+            ///Folder simpan foto
+            Storage::disk('public') -> put($imageName, file_get_contents($request->foto));
+            $url = Storage::url("/storage/app/{$imageName}");
+            $path = public_path($url);
+
+            //Json Response
+            return redirect()->route('admin.barang');
+        }catch(\Exception $e) {
+            return response()->json([
+                'message' => "something went really wrong"
+            ],500);
+        }
+    
+    }
+        
+    
 }

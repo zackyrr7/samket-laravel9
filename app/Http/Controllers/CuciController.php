@@ -23,7 +23,7 @@ class CuciController extends Controller
                 'jenis' => $request->jenis
                 
             ]);
-             return Cuci::create($request->all());
+         
        
         
             //Json Response
@@ -55,4 +55,25 @@ class CuciController extends Controller
             'message' => "pertanyaan berhasil di hapus"
         ]);
     }
+
+    public function indexCuci()
+    {
+        $cuci = Cuci::all();
+        return view('cuci.index_backend', compact('cuci'));
+    }
+
+    public function detailCuci($id)
+    {
+        $cuci = Cuci::find($id);
+        return view('cuci.detail_cuci',compact('cuci'));
+    }
+    
+
+    public function hapusBackend($id)
+    {
+        $cuci = Cuci::find($id);
+        $cuci->delete();
+        return redirect()->route('admin.cuci');
+    }
+
 }

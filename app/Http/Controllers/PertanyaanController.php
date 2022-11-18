@@ -24,7 +24,7 @@ class PertanyaanController extends Controller
                 'jawaban'=> $request->jawaban,
                 
             ]);
-             return Pertanyaan::create($request->all());
+             //return Pertanyaan::create($request->all());
        
         
             //Json Response
@@ -98,5 +98,53 @@ class PertanyaanController extends Controller
         return response()->json([
             'message' => "pertanyaan berhasil di hapus"
         ]);
+    }
+
+
+    public function indexPertanyaan()
+    {
+        $pertanyaan = Pertanyaan::all();
+        return view('pertanyaan.index_backend', compact('pertanyaan'));
+    }
+
+    public function detailPertanyaan($id)
+    {
+        $pertanyaan = Pertanyaan::find($id);
+        return view('pertanyaan.detail_pertanyaan',compact('pertanyaan'));
+    }
+    public function formUbahBAckend($id)
+    {
+        $pertanyaan = Pertanyaan::find($id);
+        return view('pertanyaan.formubah_pertanyaan',compact('pertanyaan'));
+    }
+    public function ubahBackend(Request $request,$id)
+    {
+        $pertanyaan = Pertanyaan::find($id);
+        $pertanyaan->judul = $request->judul;
+        $pertanyaan->jawaban= $request->jawaban;
+        $pertanyaan->save();
+        return redirect()->route('admin.pertanyaan.detail',['id'=>$pertanyaan->id]);
+    }
+
+    public function hapusBackend($id)
+    {
+        $pertanyaan = Pertanyaan::find($id);
+        $pertanyaan->delete();
+        return redirect()->route('admin.pertanyaan');
+    }
+
+    public function formTambahBackend()
+    {
+        return view('pertanyaan.form_tambah_pertanyaan');
+    }
+
+    public function tambahBackend(Request $request)
+    {
+        
+        $pertanyaan = new Pertanyaan();
+        $pertanyaan->judul = $request->judul;
+        $pertanyaan->jawaban = $request->jawaban;
+        $pertanyaan->save();
+        return redirect()->route('admin.pertanyaan');
     }
 }

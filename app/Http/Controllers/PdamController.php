@@ -23,7 +23,7 @@ class PdamController extends Controller
                 'air' => $request->air
                 
             ]);
-             return Pdam::create($request->all());
+           
        
         
             //Json Response
@@ -39,8 +39,8 @@ class PdamController extends Controller
 
     public function destroy($id)
     {
-        $lampu = Pdam::find($id);
-        if(!$lampu) {
+        $pdam = Pdam::find($id);
+        if(!$pdam) {
             return response()->json([
                 'message' => "Transaksi tidak Ditemukan"
             ],404);
@@ -49,10 +49,30 @@ class PdamController extends Controller
         
 
         //delete barang
-        $lampu->delete();
+        $pdam->delete();
 
         return response()->json([
             'message' => "Transaksi berhasil di hapus"
         ]);
+    }
+
+    public function indexPdam()
+    {
+        $pdam = Pdam::all();
+        return view('pdam.index_backend', compact('pdam'));
+    }
+
+    public function detailPdam($id)
+    {
+        $pdam = Pdam::find($id);
+        return view('pdam.detail_pdam',compact('pdam'));
+    }
+    
+
+    public function hapusBackend($id)
+    {
+        $pdam = Pdam::find($id);
+        $pdam->delete();
+        return redirect()->route('admin.pdam');
     }
 }

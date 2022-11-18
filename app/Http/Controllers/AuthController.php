@@ -2,23 +2,51 @@
 
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use factory;
 
 class AuthController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
+    // public function login(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'email' => 'required|numeric',
+    //         'password' => 'required|string|min:6'
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json($validator->errors(), 422);
+    //     }
+    //     if (!$token = auth()->attempt($validator->validate())) {
+    //         return response()->json(['error' => 'Unauthorized'], 401);
+    //     }
+    //     return $this->CreateNewToken($token);
+    // }
+    // public function CreateNewToken($token)
+    // {
+    //     return response()->json([
+    //         'acces_token' => $token,
+    //         'token_type' => 'bearer',
+    //         //error tapi jalan
+    //         'expires_in' => auth('api')->factory()->getTTL() * 60,
+    //         'user' => auth()->user()
+    //     ]);
+    // }
 
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|string|email',
+            'email' => 'required|string',
             'password' => 'required|string',
         ]);
         $credentials = $request->only('email', 'password');
@@ -32,40 +60,43 @@ class AuthController extends Controller
         }
 
         $user = auth()->guard('api')->user();
-        return response()->json([
+        return response()->json(
+            [
                 'status' => 'success',
-                'user' => $user,
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'bearer',
-                ]
-            ]);
-
-    }
-
-    public function register(Request $request){
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = auth()->guard('api')->login($user);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
+
             ]
-        ]);
+        );
+    }
+
+    public function register(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|max:255|unique:users',
+                'password' => 'required|string|min:6',
+            ]);
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User created successfully',
+
+
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => "something went really wrong"
+            ], 500);
+        }
     }
 
     public function logout()
@@ -88,5 +119,8 @@ class AuthController extends Controller
             ]
         ]);
     }
-
+    public function profile()
+    {
+        return response()->json(auth()->user());
+    }
 }
