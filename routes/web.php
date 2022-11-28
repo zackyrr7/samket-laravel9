@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UserController;
@@ -97,3 +98,11 @@ Route::get('/admin/barang/formtambah',[BarangController::class,'formTambahBacken
 Route::post('/admin/barang/tambah',[BarangController::class,'tambahbackend'])->name('admin.barang.tambah');
 
 
+
+//Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

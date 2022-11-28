@@ -85,12 +85,12 @@ Route::delete('/wallet/{id}', [WalletController::class, 'destroy']);
 Route::post('/wallet', [WalletController::class, 'store']);
 
 Route::group(['middleware' => 'auth:api'], function ($router) {
-    Route::get('/tabungan/show', [TabunganController::class, 'index']);
-    Route::post('/tabungan/store', [TabunganController::class, 'store']);
+    
     
 });
 
-
+Route::get('/tabungan/show/{id}', [TabunganController::class, 'index']);
+    Route::post('/tabungan/store/{id}', [TabunganController::class, 'store']);
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -100,3 +100,10 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('profile', 'profile');
 
 });
+
+
+Route::get('/tabungan/show', [TabunganController::class, 'index']);
+// insert tabungan
+Route::post('/tabungan/store', [TabunganController::class, 'store']);
+// Transaksi
+Route::get('/transaksi/show', [TransaksiController::class, 'index']);
